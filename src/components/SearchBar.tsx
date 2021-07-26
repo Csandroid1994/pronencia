@@ -1,32 +1,42 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {BiMicrophone, BiSearchAlt} from 'react-icons/bi';
-
+const cn = require('classnames');
 // this List will be responsed from Server
-export const top100List = [
-  {word: 'function', pronuciation: '펑션', id: '1'},
-  {word: 'git', pronuciation: '깃', id: '2'},
-  {word: 'cssom', pronuciation: '씨에썸', id: '3'},
-  {word: 'Ajax', pronuciation: '에이작스', id: '5'},
-  {word: 'ASUS', pronuciation: '아수스', id: '4'},
-  {word: 'Archive', pronuciation: '아카이브', id: '6'},
+export const popularSearch: Search[] = [
+  {word: 'function', pronuncitaion: '펑션', id: '1'},
+  {word: 'git', pronuncitaion: '깃', id: '2'},
+  {word: 'cssom', pronuncitaion: '씨에썸', id: '3'},
+  {word: 'Ajax', pronuncitaion: '에이작스', id: '5'},
+  {word: 'ASUS', pronuncitaion: '아수스', id: '4'},
+  {word: 'Archive', pronuncitaion: '아카이브', id: '6'},
 ];
+interface Search {
+word: string;
+pronuncitaion: string;
+id: string;
+}
 
 export default function SearchBar() {
-  const [searchInput, setSearchInput] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [popularSearchList, setPopularSearchList] = useState<Search[]>([]);
+  const [filteredPopularSearchList, setFilteredPopularSearchList] = useState<Search[]>([]);
+  const [pointer, setPointer] = useState<number>();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
+    setFilteredPopularSearchList(() => [...popularSearchList.filter((value) => value.word.includes(e.target.value))]);
   };
-
+  
   useEffect(() => {
     inputRef && inputRef.current && inputRef.current.focus();
+    setPopularSearchList(() => [...popularSearch]);
   }, []);
 
   return (
-    <div>
-      <div className='relative flex shadow-xl'>
+    <div className='relative'>
+      <div className='relative flex shadow-xl w-96'>
         <input 
           ref={inputRef}
           type='text' 
@@ -43,13 +53,27 @@ export default function SearchBar() {
           <BiMicrophone className={isFocused ? 'text-orange-400' : 'text-gray-400'}/>
         </div>
       </div>
-      <ul className=''>
-        {isFocused && top100List.map((value) => {
-          return (
-            <li key={value.id}>{value.word}</li>
-          );
-        })}
-      </ul>
+      { searchInput &&
+      <div className='absolute top-16 rounded-lg overflow-hidden shadow-lg bg-white min-h-64 w-96'>
+        <div className='text-gray-500'>
+          <p className='mx-3 mt-3 px-2 text-gray-500'>
+            {filteredPopularSearchList.length === 0 ? `'${searchInput}' 검색하기` : '인기 검색어'} 
+          </p>
+        </div>
+        <div className='py-3 px-3'>
+          {filteredPopularSearchList.map((value, index) => {
+            return (
+              <div key={value.id} data-key={index} className={cn('flex justify-between px-2 py-2', {'bg-blueGray-200': index === pointer})}>
+                <p className='flex text-gray-700'>
+                  {value.word}
+                </p>
+                <p className='text-gray-500 font-thin'>{value.pronuncitaion}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>}
+      
     </div>
   );
 }
