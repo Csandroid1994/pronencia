@@ -11,9 +11,14 @@ export const popularSearch: Search[] = [
   {word: 'Archive', pronuncitaion: '아카이브', id: '6'},
 ];
 interface Search {
-word: string;
-pronuncitaion: string;
-id: string;
+  word: string;
+  pronuncitaion: string;
+  id: string;
+}
+interface Pointer {
+  pin: number;
+  length: number;
+  focusedValue: string;
 }
 
 export default function SearchBar() {
@@ -21,14 +26,60 @@ export default function SearchBar() {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [popularSearchList, setPopularSearchList] = useState<Search[]>([]);
   const [filteredPopularSearchList, setFilteredPopularSearchList] = useState<Search[]>([]);
-  const [pointer, setPointer] = useState<number>();
+  const [pointer, setPointer] = useState<Pointer>({pin: -1, length: 0, focusedValue: ''});
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-    setFilteredPopularSearchList(() => [...popularSearchList.filter((value) => value.word.includes(e.target.value))]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isFocused) {
+      setSearchInput(e.target.value);
+      const filteredArray = popularSearchList.filter((value) => value.word.includes(e.target.value));
+      setFilteredPopularSearchList(() => [...filteredArray]);
+      setPointer(() => ({pin: -1, length: filteredArray.length, focusedValue: ''}));
+    }
   };
-  
+
+  const isMoveToDown = (pointer: Pointer) => pointer.pin >= -1 && pointer.pin < pointer.length - 1;
+  const isMoveToUp = (pointer: Pointer) => pointer.pin <= 0;
+  const initializePin = () => setPointer((prev) => ({...prev, pin: -1, focusedValue: ''}));
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => setIsFocused(false);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    switch (e.code) {
+    case 'ArrowDown':      
+      if (!isMoveToDown(pointer)) {
+        break;
+      } else {
+        setIsFocused(false);
+        setPointer((prev) => ({...prev, pin: prev.pin + 1, focusedValue: filteredPopularSearchList[prev.pin + 1].word}));
+        break;
+      }
+    case 'ArrowUp':
+      if (isMoveToUp(pointer)) {
+        initializePin();
+        break;
+      } else {
+        setIsFocused(false);
+        setPointer((prev) => ({...prev, pin: prev.pin - 1, focusedValue: filteredPopularSearchList[prev.pin - 1].word}));
+        break;
+      }
+    case 'Enter':
+      if (!isFocused) {
+        setSearchInput(pointer.focusedValue);
+        const filteredArray = popularSearchList.filter((value) => value.word.includes(pointer.focusedValue));
+        setFilteredPopularSearchList(() => [...filteredArray]);
+        setPointer(() => ({pin: -1, length: filteredArray.length, focusedValue: ''}));
+        setIsFocused(true);
+        break;
+      } else {
+        console.log('검색');
+      }
+    default:
+      setIsFocused(true);
+      break;
+    }
+  };
+
   useEffect(() => {
     inputRef && inputRef.current && inputRef.current.focus();
     setPopularSearchList(() => [...popularSearch]);
@@ -43,18 +94,18 @@ export default function SearchBar() {
           className='transition duration-500 ease-in-out focus:outline-none focus:ring-4 focus:ring-orange-400
           w-96 h-14 bg-gray-100 rounded-md pl-4 text-3xl pr-24 dark:bg-white dark:text-black'
           placeholder='검색' 
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           value={searchInput}
-          onChange={handleInput}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
         />
         <div className='absolute flex gap-2 right-0 text-3xl items-center h-14 mr-4'>
           <BiSearchAlt className={isFocused ? 'text-orange-400' : 'text-gray-400'}/>
           <BiMicrophone className={isFocused ? 'text-orange-400' : 'text-gray-400'}/>
         </div>
       </div>
-      { searchInput &&
-      <div className='absolute top-16 rounded-lg overflow-hidden shadow-lg bg-white min-h-64 w-96'>
+      {searchInput && <div className='absolute top-16 rounded-lg overflow-hidden shadow-lg bg-white min-h-64 w-96'>
         <div className='text-gray-500'>
           <p className='mx-3 mt-3 px-2 text-gray-500'>
             {filteredPopularSearchList.length === 0 ? `'${searchInput}' 검색하기` : '인기 검색어'} 
@@ -63,17 +114,14 @@ export default function SearchBar() {
         <div className='py-3 px-3'>
           {filteredPopularSearchList.map((value, index) => {
             return (
-              <div key={value.id} data-key={index} className={cn('flex justify-between px-2 py-2', {'bg-blueGray-200': index === pointer})}>
-                <p className='flex text-gray-700'>
-                  {value.word}
-                </p>
+              <div key={value.id} className={cn('flex justify-between px-2 py-2', {'bg-blue-200': index === pointer.pin})}>
+                <p className='flex text-gray-700'>{value.word}</p>
                 <p className='text-gray-500 font-thin'>{value.pronuncitaion}</p>
               </div>
             );
           })}
         </div>
       </div>}
-      
     </div>
   );
 }
