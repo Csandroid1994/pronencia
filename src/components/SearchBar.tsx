@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {BiMicrophone, BiSearchAlt} from 'react-icons/bi';
 const cn = require('classnames');
+import {useRouter} from 'next/router';
 // this List will be responsed from Server
 export const popularSearch: Search[] = [
   {word: 'function', pronuncitaion: '펑션', id: '1'},
@@ -28,6 +29,7 @@ export default function SearchBar() {
   const [filteredPopularSearchList, setFilteredPopularSearchList] = useState<Search[]>([]);
   const [pointer, setPointer] = useState<Pointer>({pin: -1, length: 0, focusedValue: ''});
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isFocused) {
@@ -72,7 +74,7 @@ export default function SearchBar() {
         setIsFocused(true);
         break;
       } else {
-        console.log('검색');
+        router.push(`/search/${searchInput}`);
       }
     default:
       setIsFocused(true);
@@ -112,14 +114,12 @@ export default function SearchBar() {
           </p>
         </div>
         <div className='py-3 px-3'>
-          {filteredPopularSearchList.map((value, index) => {
-            return (
-              <div key={value.id} className={cn('flex justify-between px-2 py-2', {'bg-blue-200': index === pointer.pin})}>
-                <p className='flex text-gray-700'>{value.word}</p>
-                <p className='text-gray-500 font-thin'>{value.pronuncitaion}</p>
-              </div>
-            );
-          })}
+          {filteredPopularSearchList.map((value, index) => (
+            <div key={value.id} className={cn('flex justify-between px-2 py-2', {'bg-orange-200': index === pointer.pin})}>
+              <p className='flex text-gray-700'>{value.word}</p>
+              <p className='text-gray-500 font-thin'>{value.pronuncitaion}</p>
+            </div>
+          ))}
         </div>
       </div>}
     </div>
