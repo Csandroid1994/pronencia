@@ -4,8 +4,9 @@ import Head from 'next/head';
 
 import Layout from 'components/Layout';
 import SearchBar from 'components/SearchBar';
+import PostCard from 'components/PostCard';
 
-const posts = {
+const posts = [{
   id: '1',
   word: 'ASUS',
   pronunciation: '아수스',
@@ -14,7 +15,7 @@ const posts = {
   opinions: 1,
   views: 131,
   createdAt: new Date().toLocaleDateString(),
-};
+}];
 
 export default function Search() {
   const router = useRouter();
@@ -27,11 +28,14 @@ export default function Search() {
       </Head>
       <div className='flex flex-col items-start'>
         <div className='flex justify-between w-full items-baseline'>
-          <h1 className='text-white text-5xl mt-24 mb-10'>{word}에 대한 검색 결과</h1>
+          <h1 className='text-white text-5xl mt-24 mb-10'>&apos;{word}&apos;에 대한 검색 결과</h1>
           <SearchBar />
         </div>
         <hr className='border-b-2 border-blueGray-300 w-full' />
       </div>
+      {posts.map((value) => {
+        return <PostCard key={value.id} data={value}/>;
+      })}
     </Layout>
   );
 }
