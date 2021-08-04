@@ -107,7 +107,7 @@ export default function SearchBar() {
           <BiMicrophone className={isFocused ? 'text-orange-400' : 'text-gray-400'}/>
         </div>
       </div>
-      {searchInput && <div className='absolute top-16 rounded-lg overflow-hidden shadow-lg bg-white min-h-64 w-96'>
+      {searchInput && <div className='absolute z-10 top-16 rounded-lg overflow-hidden shadow-lg bg-white min-h-64 w-96'>
         <div className='text-gray-500'>
           <p className='mx-3 mt-3 px-2 text-gray-500'>
             {filteredPopularSearchList.length === 0 ? `'${searchInput}' 검색하기` : '인기 검색어'} 
