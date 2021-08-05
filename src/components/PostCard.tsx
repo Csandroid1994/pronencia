@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 import {MdDateRange} from 'react-icons/md';
 import {AiOutlineComment, AiOutlineEye} from 'react-icons/ai';
-import {GrView} from 'react-icons/gr';
 
 interface PostCardProps {
   data: PostCardData
@@ -27,7 +26,7 @@ export default function PostCard(props: PostCardProps) {
       <a>
         <div className='border border-gray-300 my-3 w-full rounded-md 
         dark:border-white dark:text-white flex  dark:hover:border-orange-400
-        hover:border-orange-400 duration-400 shadow-md'>
+        hover:border-orange-400 duration-500 shadow-md'>
           <div className='w-1/12 bg-orange-400 h-auto rounded-md flex flex-col justify-center'>
             <p className='text-lg text-center'>{helpfulCount}</p>
             <p className='text-xs text-center'>🐥helpful!</p>
