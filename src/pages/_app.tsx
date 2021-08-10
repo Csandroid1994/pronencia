@@ -1,6 +1,9 @@
 import {useEffect} from 'react';
 import {useRouter} from 'next/router';
 import {DefaultSeo} from 'next-seo';
+import {ThemeProvider} from 'next-themes';
+
+import Navigation from 'components/Navigation';
 
 import {pageview} from 'lib/ga';
 import {SEO} from 'configs/seo';
@@ -22,10 +25,11 @@ export default function MyApp({Component, pageProps}: AppProps) {
   }, [router.events]);
 
   return (
-    <>
+    <ThemeProvider attribute='class' enableSystem={false} defaultTheme='dark'>
+      <Navigation />
       <DefaultSeo {...SEO} />
       <Component {...pageProps} />
-    </>
+    </ThemeProvider>
   );
 }
 
