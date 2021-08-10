@@ -2,12 +2,18 @@ const colors = require('tailwindcss/colors');
 
 module.exports = {
   purge: [],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
       spacing: {
+        '1440': '1440px',
+        '1152': '1152px',
       },
       fontFamily: {
+        sans: ['Roboto', 'Noto Sans KR', 'sans-serif'],
+      },
+      outline: {
+        orange: ['2px solid #f6ad55', '1px'],
       },
     },
     colors: {
